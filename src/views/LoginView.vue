@@ -2,9 +2,9 @@
   <div class="login">
     <div class="left"></div>
     <div class="right">
-      <div class="header">
+      <div class="header text-2xl">
         <h2>Welcome to</h2>
-        <h1>Todos</h1>
+        <h1 class="font-bold">Todos</h1>
       </div>
       <div class="formContainer">
         <CustomInput type="email" @custonInput="logEmail" />
