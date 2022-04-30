@@ -15,7 +15,7 @@
     <button @click="logOut">Log Out</button>
     <div>
       <div v-for="task in tasks" :key="task.date" class="flex flex-row m-3">
-        <h1 class="bg-blue-500 w-1/4">{{ task.task }}</h1>
+        <h1 class="bg-blue-500 w-1/4">{{ task.doc.task }}</h1>
         <button
           @click="delteTask(task)"
           class="bg-red-500 p-1 hover:bg-red-600"
@@ -28,7 +28,14 @@
 </template>
 
 <script>
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import app from "../firebase/db.js";
 const db = getFirestore(app);
 
@@ -48,7 +55,6 @@ export default {
         time: new Date(),
         status: false,
       };
-
       this.task = "";
       this.tasks.push(doc);
       const docRef = await addDoc(collection(db, "todos"), doc);
@@ -57,7 +63,9 @@ export default {
     logOut() {
       this.$store.dispatch("logOut");
     },
-    delteTask(task) {
+    async delteTask(task) {
+      const taskDoc = doc(db, "todos", task.docId);
+      await deleteDoc(taskDoc);
       const i = this.tasks.indexOf(task);
       this.tasks.splice(i, 1);
     },
@@ -65,7 +73,7 @@ export default {
   async mounted() {
     const querySnap = await getDocs(collection(db, "todos"));
     querySnap.forEach((doc) => {
-      this.tasks.push(doc.data());
+      this.tasks.push({ doc: doc.data(), docId: doc.id });
     });
     console.log(this.tasks);
   },
